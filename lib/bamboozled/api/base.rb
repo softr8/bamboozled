@@ -39,9 +39,11 @@ module Bamboozled
               if response.body.to_s.empty?
                 {"headers" => response.headers}.with_indifferent_access
               else
-                JSON.parse(response.body).with_indifferent_access
+                parsed_response = JSON.parse(response.body)
+                parsed_response = parsed_response.with_indifferent_access if parsed_response.is_a?(Hash)
+                parsed_response
               end
-            rescue
+            rescue JSON::ParserError
               MultiXml.parse(response, symbolize_keys: true)
             end
           when 400
